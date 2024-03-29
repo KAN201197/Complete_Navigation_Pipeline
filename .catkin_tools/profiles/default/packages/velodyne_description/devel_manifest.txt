@@ -1,5 +1,0 @@
-velodyne_simulator/velodyne_description
-/home/yash/ME5413/ME5413_Final_Project/devel/.private/velodyne_description/cmake.lock /home/yash/ME5413/ME5413_Final_Project/devel/./cmake.lock
-/home/yash/ME5413/ME5413_Final_Project/devel/.private/velodyne_description/lib/pkgconfig/velodyne_description.pc /home/yash/ME5413/ME5413_Final_Project/devel/lib/pkgconfig/velodyne_description.pc
-/home/yash/ME5413/ME5413_Final_Project/devel/.private/velodyne_description/share/velodyne_description/cmake/velodyne_descriptionConfig-version.cmake /home/yash/ME5413/ME5413_Final_Project/devel/share/velodyne_description/cmake/velodyne_descriptionConfig-version.cmake
-/home/yash/ME5413/ME5413_Final_Project/devel/.private/velodyne_description/share/velodyne_description/cmake/velodyne_descriptionConfig.cmake /home/yash/ME5413/ME5413_Final_Project/devel/share/velodyne_description/cmake/velodyne_descriptionConfig.cmake
