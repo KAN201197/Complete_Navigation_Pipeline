@@ -55,15 +55,17 @@ After forking this repo to your own github:
 ```bash
 # Clone your own fork of this repo (assuming home here `~/`)
 cd
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/ME5413_Final_Project.git
-cd ME5413_Final_Project
+git git@github.com:sauk2/ME5413_Final_Project_Group_2.git
+cd ME5413_Final_Project_Group_2
+git submodule init
+git submodule update
 
 # Install all dependencies
 rosdep install --from-paths src --ignore-src -r -y
 
 # Build
 catkin_make
-# Source 
+# Source
 source devel/setup.bash
 ```
 
@@ -72,7 +74,7 @@ To properly load the gazebo world, you will need to have the necessary model fil
 There are two sources of models needed:
 
 * [Gazebo official models](https://github.com/osrf/gazebo_models)
-  
+
   ```bash
   # Create the destination directory
   cd
@@ -167,7 +169,7 @@ roslaunch me5413_world navigation.launch
   * Random Box 1, 2, 3, 4
   * Delivery Vehicle 1, 2, 3
 * We have provided you a GUI in RVIZ that allows you to click and publish these given goal poses to the `/move_base_simple/goal` topic:
-  
+
   ![rviz_panel_image](src/me5413_world/media/rviz_panel.png)
 
 * We also provides you four topics (and visualized in RVIZ) that computes the real-time pose error between your robot and the selelcted goal pose:
