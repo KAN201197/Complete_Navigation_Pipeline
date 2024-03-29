@@ -224,7 +224,7 @@
       <link name='Wall_27'>
         <collision name='Wall_27_Collision'>
           <geometry>
-            <box>
+            <box> 
               <size>7.5 0.15 2.5</size>
             </box>
           </geometry>
