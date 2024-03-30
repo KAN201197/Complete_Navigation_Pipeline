@@ -18,4 +18,23 @@
     <!-- Load the destination configuration -->
     <rosparam command="load" file="$(find me5413_world)/config/config.yaml" />
 
+
+    <!-- update the topics accroding to your need -->
+    <!-- <arg name="record_topics" default="
+    /mid/points
+    /tf
+    /tf_static
+    /odometry/filtered
+    /imu/data
+    /imu/data/bias
+    /joint_states
+    /front/scan
+    /cmd_vel
+    /clock
+    /gazebo/ground_truth/state
+    " />
+
+    <node pkg="rosbag" type="record" name="record" output="screen" args="-o /home/yash/ME5413/Final_Project/ME5413_Final_Project_Group_2/data/ 
+    -e $(arg record_topics)"/> -->
+
 </launch>
