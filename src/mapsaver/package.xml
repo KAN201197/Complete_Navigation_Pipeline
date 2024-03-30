@@ -19,8 +19,8 @@
   <build_depend>rospy</build_depend>
   <run_depend>rospy</run_depend>
 
-  <build_depend>ros_bridge</build_depend>
-  <run_depend>ros_bridge</run_depend>
+  <build_depend>cv_bridge</build_depend>
+  <run_depend>cv_bridge</run_depend>
 
   <build_depend>rosbag_storage</build_depend>
   <run_depend>rosbag_storage</run_depend>
