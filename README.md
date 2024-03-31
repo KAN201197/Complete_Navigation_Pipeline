@@ -135,6 +135,14 @@ rosrun map_server map_saver -f my_map map:=/map
 
 ![rviz_nmapping_image](src/me5413_world/media/rviz_mapping.png)
 
+
+
+
+To view the .pcd map saved, use the following command (change the path of map):
+
+```bash
+roslaunch me5413_world pcd_view.launch pcd_file:=${HOME}/ME5413/Final_Project/ME5413_Final_Project_Group_2/maps/map_pcd.pcd
+```
 ### 3. Navigation
 
 Once completed **Step 2** mapping and saved your map, quit the mapping process.
