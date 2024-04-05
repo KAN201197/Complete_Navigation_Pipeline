@@ -23,6 +23,18 @@ RUN apt-get update --fix-missing \
 WORKDIR /appuser/catkin_ws
 RUN rosdep install --from-paths src --ignore-src -r -y
 
+RUN apt-get install -y \
+  google-mock \
+  python3-sphinx \
+  libboost-iostreams-dev \
+  libeigen3-dev \
+  libcairo2-dev \
+  libceres-dev \
+  libgflags-dev \
+  libgoogle-glog-dev \
+  liblua5.2-dev \
+  libprotobuf-dev
+
 USER appuser
 WORKDIR /appuser/catkin_ws
 RUN source /opt/ros/noetic/setup.bash \
