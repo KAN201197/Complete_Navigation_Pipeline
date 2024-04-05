@@ -5,7 +5,7 @@
     <param name="resolution" value="0.02" />
 
      <!--name of the fixed frame,needs to be "/map" for SLAM-->
-    <param name="frame_id" type="string" value="camera_init" />
+    <param name="frame_id" type="string" value="/map" />
 
      <!--max range/depth resolution of the kinect meters-->
     <param name="sensor_model/max_range" value="50.0" />
@@ -18,8 +18,11 @@
     <param name="ground_filter_angle" value="3.14" />
 
      <!--topic from where pointcloud2 messages are subscribed-->
-    <remap from="cloud_in" to="/laser_cloud_map" />
-
+    <remap from="cloud_in" to="/mid/points" />
+  
   </node>
+
+    <!-- Launch Rviz with our settings -->
+  <!-- <node type="rviz" name="rviz" pkg="rviz" args="-d $(find me5413_world)/rviz/manual.rviz" output="log" respawn="true"/> -->
 
 </launch>

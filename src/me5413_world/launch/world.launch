@@ -18,6 +18,7 @@
     <!-- Load the destination configuration -->
     <rosparam command="load" file="$(find me5413_world)/config/config.yaml" />
 
+    <!-- <node pkg="me5413_world" type="object_spawner_gz_plugin" name="object_spawner_gz_plugin" output="screen" /> -->
 
     <!-- update the topics accroding to your need -->
     <!-- <arg name="record_topics" default="
