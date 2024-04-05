@@ -18,8 +18,8 @@ def callback(data):
     except CvBridgeError as e:
         rospy.logerr("CvBridge Error: {0}".format(e))
 
-    w, h = cv_image.shape[:2]               #512 640
-    print(f'size {w}  {h}')
+    # w, h = cv_image.shape[:2]               #512 640
+    # print(f'size {w}  {h}')
     # Display the image
     results = model(source = cv_image, imgsz = [512, 640])
     for r in results:
