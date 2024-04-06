@@ -1,3 +1,6 @@
 [submodule "src/A-LOAM"]
 	path = src/A-LOAM
 	url = https://github.com/sauk2/A-LOAM.git
+[submodule "src/laserscan_merger"]
+	path = src/laserscan_merger
+	url = https://github.com/robotics-upo/laserscan_merger.git
