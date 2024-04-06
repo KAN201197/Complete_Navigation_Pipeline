@@ -1,41 +1,24 @@
 <launch>
-    <!-- Using the simulation clock -->
-    <param name="/use_sim_time" value="true"/>
+  <!-- Using the simulation clock -->
+  <param name="/use_sim_time" value="true"/>
 
-    <!-- Load the project world into Gazebo -->
-    <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find me5413_world)/worlds/me5413_project.world"/>
-        <arg name="debug" value="false" />
-        <arg name="gui" value="true" />
-        <arg name="paused" value="false"/>
-        <arg name="use_sim_time" value="true"/>
-        <arg name="headless" value="false"/>
-    </include>
+  <!-- Load the project world into Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(find me5413_world)/worlds/me5413_project.world"/>
+      <arg name="debug" value="false" />
+      <arg name="gui" value="true" />
+      <arg name="paused" value="false"/>
+      <arg name="use_sim_time" value="true"/>
+      <arg name="headless" value="false"/>
+  </include>
 
-    <!-- Add our jackal robot into the simulation -->
-    <include file="$(find me5413_world)/launch/include/spawn_jackal.launch"/>
-    
-    <!-- Load the destination configuration -->
-    <rosparam command="load" file="$(find me5413_world)/config/config.yaml" />
+  <!-- Add our jackal robot into the simulation -->
+  <include file="$(find me5413_world)/launch/include/spawn_jackal.launch"/>
 
-    <!-- <node pkg="me5413_world" type="object_spawner_gz_plugin" name="object_spawner_gz_plugin" output="screen" /> -->
+  <!-- Load the destination configuration -->
+  <rosparam command="load" file="$(find me5413_world)/config/config.yaml" />
 
-    <!-- update the topics accroding to your need -->
-    <!-- <arg name="record_topics" default="
-    /mid/points
-    /tf
-    /tf_static
-    /odometry/filtered
-    /imu/data
-    /imu/data/bias
-    /joint_states
-    /front/scan
-    /cmd_vel
-    /clock
-    /gazebo/ground_truth/state
-    " />
-
-    <node pkg="rosbag" type="record" name="record" output="screen" args="-o /home/yash/ME5413/Final_Project/ME5413_Final_Project_Group_2/data/ 
-    -e $(arg record_topics)"/> -->
+  <!-- convert kinnect depth camera into laser scan topic -->
+  <include file="$(find me5413_world)/launch/include/depth_image_to_laserscan.launch"/>
 
 </launch>
