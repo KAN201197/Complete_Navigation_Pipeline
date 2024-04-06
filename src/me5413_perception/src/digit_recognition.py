@@ -9,7 +9,7 @@ import threading
 
 # Initialize global variables
 current_dir = os.path.dirname(os.path.abspath(__file__))
-weights_path = os.path.join(current_dir, '..', 'yolov8', 'best.pt')
+weights_path = os.path.join(current_dir, '..', 'yolov8', 'best_detect.pt')
 model = YOLO(weights_path)
 latest_image = None
 bridge = CvBridge()
@@ -32,13 +32,16 @@ def timer_callback(event):
             image_to_process = latest_image.copy()
         
         # Perform prediction
-        results = model.predict(source=image_to_process, imgsz=[512, 640], conf = 0.4)
+        results = model.predict(source=image_to_process, imgsz=[512, 640], conf = 0.5, 
+                                save_conf=True, show=True)
 
-        results[0].probs.top5
-        box = results[0].boxes
-        box.numpy() 
-        
-        print(box.xyxy)
+        for r in results:
+            box = r.boxes
+            box.numpy() 
+
+            print(box.xyxy)
+            # r.show()
+
 
         
         # Visualization or further processing
