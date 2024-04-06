@@ -245,6 +245,17 @@
     <child link="front_mount" />
     <origin xyz="${mount_spacing} 0 0" />
   </joint>
+  
+  <!-- add depth camera to the chassis -->
+  
+  <xacro:include filename="$(find jackal_description)/urdf/kinect_camera.xacro" />
+  <xacro:kinect_camera prefix="kinect"/>
+  <joint name="kinect_joint" type="fixed">
+    <parent link="mid_mount" />
+    <child link="kinect_link" />
+    <origin xyz="0.15 0 0.035" />  
+  </joint>
+  
 
   <!-- Bring in simulation data for Gazebo. -->
   <xacro:include filename="$(find jackal_description)/urdf/jackal.gazebo" />

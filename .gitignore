@@ -2,6 +2,7 @@
 
 devel/
 logs/
+data/
 build/
 bin/
 lib/
@@ -35,7 +36,6 @@ devel_isolated/
 CMakeLists.txt.user
 
 srv/_*.py
-*.pcd
 *.pyc
 qtcreator-*
 *.user
@@ -52,3 +52,4 @@ qtcreator-*
 # Catkin custom files
 CATKIN_IGNORE
 .catkin_tools
+
