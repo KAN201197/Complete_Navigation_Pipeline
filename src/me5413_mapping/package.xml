@@ -22,7 +22,6 @@
   <depend>octomap_server</depend>
   <depend>depthimage_to_laserscan</depend>
   <depend>hector_slam</depend>
-  <depend>laserscan_merger</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
