@@ -35,7 +35,10 @@ def timer_callback(event):
         results = model.predict(source=image_to_process, imgsz=[512, 640], conf = 0.4)
 
         results[0].probs.top5
-        results[0].boxes
+        box = results[0].boxes
+        box.numpy() 
+        
+        print(box.xyxy)
 
         
         # Visualization or further processing
