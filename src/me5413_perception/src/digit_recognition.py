@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import rospy
 from sensor_msgs.msg import Image
+from geometry_msgs import PointStamped
+from std_msgs import Header
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from ultralytics import YOLO
@@ -75,10 +77,24 @@ def timer_callback(event):
             x_center = int(x1+w/2)
             y_center = int(y1+h/2)
             if 0 <= x_center < depth_image.shape[0] and 0 <= y_center < depth_image.shape[1]:
-                print(f'Depth image coordinates: {depth_image[x_center, y_center]}')
+                depth = depth_image[x_center, y_center]
+                print(f'Depth image coordinates: {depth}')
+                coordinates_publisher(x_center, y_center, depth)
             else:
                 print("Index out of bounds.")
 
+
+def coordinates_publisher(x, y, z):
+    msg = PointStamped()
+    header = Header()
+    header.stamp = rospy.Time.now()
+    header.frame_id = "Image frame"
+    msg.header = header
+    msg.point.x = x
+    msg.point.y = y
+    msg.point.z = z
+    pub_coordinate.publish(msg)
+    
 
 
 def find_number_in_array(array, number):
@@ -93,6 +109,7 @@ def listener():
     rospy.init_node('listener', anonymous=True)
     rospy.Subscriber('/kinect/rgb/image_raw', Image, image_callback)
     rospy.Subscriber('/kinect/depth/image_raw', Image, depth_image_callback)
+    pub_coordinate = rospy.Publisher('/target/coordinate', PointStamped, 10)
     timer = rospy.Timer(rospy.Duration(1), timer_callback)
     rospy.spin()
 
