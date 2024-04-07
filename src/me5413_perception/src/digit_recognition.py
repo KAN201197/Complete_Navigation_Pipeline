@@ -6,6 +6,10 @@ from cv_bridge import CvBridge, CvBridgeError
 from ultralytics import YOLO
 import os
 import threading
+import torch
+import numpy as np
+
+
 
 # Initialize global variables
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -14,6 +18,7 @@ model = YOLO(weights_path)
 latest_image = None
 bridge = CvBridge()
 image_lock = threading.Lock()  # Ensure thread-safe access to the latest_image
+TARGET = 3
 
 def image_callback(data):
     global latest_image
@@ -37,16 +42,30 @@ def timer_callback(event):
 
         for r in results:
             box = r.boxes
+            box.cpu()
             box.numpy() 
+            coordinates = box.xyxy
+            classes = box.cls
+        np_coordinates = coordinates.numpy()
+        print(f'All detected coordinates are:\n{np_coordinates}')
+        np_classes = classes.numpy()
+        print(f'All detected classes are:\n{np_classes}')
 
-            print(box.xyxy)
-            # r.show()
+        index = find_number_in_array(np_classes, TARGET)
+        print(f'Index of {TARGET}:\n{index}')
+        TARGET_COORDINATES = np_coordinates[index, :] 
+        print(f'Coordinates of {TARGET} are:\n{TARGET_COORDINATES}')
 
 
-        
-        # Visualization or further processing
-        cv2.imshow("Image Window", image_to_process)
-        cv2.waitKey(3)
+def find_number_in_array(array, number):
+    # Use np.where to find all indices where the number appears
+    indices = np.where(array == number)[0]
+    
+    # Check if any indices were found
+    if indices.size > 0:
+        return indices
+    else:
+        return -1
 
 def listener():
     rospy.init_node('listener', anonymous=True)
