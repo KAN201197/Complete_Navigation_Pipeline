@@ -29,6 +29,17 @@ def image_callback(data):
     except CvBridgeError as e:
         rospy.logerr("CvBridge Error: {0}".format(e))
 
+
+def depth_image_callback(data):
+    try:
+        depth_image = bridge.imgmsg_to_cv2(data, desired_encoding='passthrough')
+
+        cv2.imshow("depth_image",depth_image)
+        cv2.waitKey(3)
+    except CvBridgeError as e:
+        rospy.logerr("CvBridge Error: {0}".format(e))
+    
+
 def timer_callback(event):
     global latest_image
     if latest_image is not None:
@@ -37,7 +48,7 @@ def timer_callback(event):
             image_to_process = latest_image.copy()
         
         # Perform prediction
-        results = model.predict(source=image_to_process, imgsz=[512, 640], conf = 0.5, 
+        results = model.predict(source=image_to_process, conf = 0.5, 
                                 save_conf=True, show=True)
 
         for r in results:
@@ -53,23 +64,25 @@ def timer_callback(event):
 
         index = find_number_in_array(np_classes, TARGET)
         print(f'Index of {TARGET}:\n{index}')
-        TARGET_COORDINATES = np_coordinates[index, :] 
-        print(f'Coordinates of {TARGET} are:\n{TARGET_COORDINATES}')
+        if index == -1:
+            print("Looking for target")
+        else:
+            TARGET_COORDINATES = np_coordinates[index, :] 
+            print(f'Coordinates of {TARGET} are:\n{TARGET_COORDINATES}')
 
 
 def find_number_in_array(array, number):
-    # Use np.where to find all indices where the number appears
     indices = np.where(array == number)[0]
     
-    # Check if any indices were found
     if indices.size > 0:
-        return indices
+        return indices[0]
     else:
         return -1
 
 def listener():
     rospy.init_node('listener', anonymous=True)
-    rospy.Subscriber('/front/image_raw/', Image, image_callback)
+    rospy.Subscriber('/kinect/rgb/image_raw', Image, image_callback)
+    rospy.Subscriber('/kinect/depth/image_raw', Image, depth_image_callback)
     timer = rospy.Timer(rospy.Duration(1), timer_callback)
     rospy.spin()
 
