@@ -40,35 +40,42 @@ class DigitRecognizer:
             rospy.logerr("CvBridge Error: {0}".format(e))
 
     def timer_callback(self, event):
-        if self.latest_image is not None:
-            with self.image_lock:
+        with self.image_lock:
+            if self.latest_image is not None:
                 image_to_process = self.latest_image.copy()
-
-            results = self.model.predict(source=image_to_process, conf=0.5, save_conf=True, show=True)
-
-            for r in results:
-                box = r.boxes
-                box.cpu()
-                box.numpy()
-                coordinates = box.xywh
-                classes = box.cls
-            np_coordinates = coordinates.numpy()
-            np_classes = classes.numpy()
-
-            index = self.find_number_in_array(np_classes, self.TARGET)
-            if index != -1:
-                [x1, y1, w, h] = np_coordinates[index, :]
-                x_center = int(x1 + w / 2)
-                y_center = int(y1 + h / 2)
-                if 0 <= x_center < self.depth_image.shape[0] and 0 <= y_center < self.depth_image.shape[1]:
-                    depth = self.depth_image[x_center, y_center]
-                    # print(f'Depth image coordinates: {depth}')
-                    self.coordinates_publisher(x_center, y_center, depth)
-                else:
-                    print("Out of bounds.")
-
             else:
-                print("Looking for target.")
+                return
+
+        with self.depth_image_lock:
+            if self.depth_image is not None:
+                depth_image_to_process = self.depth_image.copy()
+            else:
+                return
+
+        results = self.model.predict(source=image_to_process, conf=0.5, save_conf=True, show=True)
+        coordinates = results[0].boxes.xyxy
+        classes = results[0].boxes.cls
+        np_coordinates = coordinates.numpy()
+        np_classes = classes.numpy()
+        if not len(np_classes):
+            return
+        
+        index = self.find_number_in_array(np_classes, self.TARGET)
+        if index < 0:
+            [x1, y1, x2, y2] = np_coordinates[index, :]
+            x_center = int((x1 + x2) / 2)
+            y_center = int((y1 + y2) / 2)
+
+            if 0 <= x_center < depth_image_to_process.shape[1] and 0 <= y_center < depth_image_to_process.shape[0]:
+                depth = depth_image_to_process[y_center, x_center]
+                if np.isnan(depth):
+                    rospy.logwarn("Depth value is NaN at ({}, {})".format(x_center, y_center))
+                else:
+                    self.coordinates_publisher(x_center, y_center, depth)
+            else:
+                rospy.logwarn("Coordinates out of bounds.")
+        else:
+            rospy.loginfo("Target not found.")
 
     def coordinates_publisher(self, x, y, z):
         msg = PointStamped()
@@ -92,7 +99,7 @@ class DigitRecognizer:
         rospy.init_node('listener', anonymous=True)
         rospy.Subscriber('/kinect/rgb/image_raw', Image, self.image_callback)
         rospy.Subscriber('/kinect/depth/image_raw', Image, self.depth_image_callback)
-        self.pub_coordinate = rospy.Publisher('/target/coordinates', PointStamped, 10)
+        self.pub_coordinate = rospy.Publisher('/target/coordinates', PointStamped, queue_size= 10)
         timer = rospy.Timer(rospy.Duration(1), self.timer_callback)
         rospy.spin()
 
