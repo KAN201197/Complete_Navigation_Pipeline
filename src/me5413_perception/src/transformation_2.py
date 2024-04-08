@@ -4,6 +4,8 @@ import rospy
 import tf
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import PoseStamped
+import actionlib
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
 # K Matrix from camera info for transforming coordinate in image frame (with depth) into camera frame 
 K_matrix = np.array([[554.5940455214144, 0.0, 320.5],
@@ -18,6 +20,27 @@ class YoloObjectTransformationToMap:
         rospy.Subscriber("/target/coordinates", PointStamped, self.object_position_callback)
         self.goal_publisher = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=1)
 
+
+    def pub_goal_move_base(self, x, y):
+        client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+        client.wait_for_server()
+
+        goal = MoveBaseGoal()
+        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.header.stamp = rospy.Time.now()
+        goal.target_pose.pose.position.x = x
+        goal.target_pose.pose.position.x = y
+        goal.target_pose.pose.orientation.w = 1.0
+
+        client.send_goal(goal)
+        wait = client.wait_for_result()
+        if not wait:
+            rospy.logerr("Action server not available!")
+            rospy.signal_shutdown("Action server not available!")
+        else:
+            return client.get_result()    
+        
+
     def object_position_callback(self, msg):
         try:
             # Get the transform from /base_link to /map
@@ -27,7 +50,6 @@ class YoloObjectTransformationToMap:
                 tf.transformations.quaternion_matrix(rot)
             )
            
-
             # Pixel coordinates and depth
             x_pixel, y_pixel, depth = msg.point.x, msg.point.y, msg.point.z
 
@@ -38,8 +60,6 @@ class YoloObjectTransformationToMap:
             # Direct transformation of points from camera frame to map is applied first
             point_in_map = np.dot(matrix_camera_frame_in_map_frame, point_camera_homogeneous)
             
-
-
             # Log the transformed point's coordinates in the map frame
             rospy.loginfo("Object in map frame: (%.2f, %.2f, %.2f)", point_in_map[0], point_in_map[1], point_in_map[2])
             goal = PoseStamped()
@@ -54,12 +74,10 @@ class YoloObjectTransformationToMap:
             goal.pose.orientation.y = 0.0
             goal.pose.orientation.z = 0.0
             goal.pose.orientation.w = 1.0
-
+            
             # Publish the goal
             self.goal_publisher.publish(goal)
-
-
-
+            self.pub_goal_move_base(point_in_map[0], point_in_map[1])
 
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
             rospy.logerr("TF transformation error: %s", e)
@@ -67,4 +85,5 @@ class YoloObjectTransformationToMap:
 if __name__ == '__main__':
     transformer = YoloObjectTransformationToMap()
     rospy.spin()  # Keeping the node alive for callbacks
+
 
