@@ -61,7 +61,7 @@ class DigitRecognizer:
             return
         
         index = self.find_number_in_array(np_classes, self.TARGET)
-        if index < 0:
+        if index != -1:
             [x1, y1, x2, y2] = np_coordinates[index, :]
             x_center = int((x1 + x2) / 2)
             y_center = int((y1 + y2) / 2)
@@ -90,7 +90,8 @@ class DigitRecognizer:
 
     def find_number_in_array(self, array, number):
         indices = np.where(array == number)[0]
-        if indices.size > 0:
+        print(indices)
+        if len(indices) > 0:
             return indices[0]
         else:
             return -1
