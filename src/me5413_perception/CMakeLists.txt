@@ -118,7 +118,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-catkin_install_python(PROGRAMS src/digit_recognition.py
+catkin_install_python(
+  PROGRAMS
+    src/digit_recognition.py
+    src/exploration_manager.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

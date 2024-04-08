@@ -1,0 +1,4 @@
+<launch>
+  <rosparam command="load" file="$(find me5413_perception)/config/config.yaml" />
+  <node pkg="me5413_perception" name="exploration_manager" type="exploration_manager.py" output="screen" />
+</launch>
