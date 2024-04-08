@@ -2,7 +2,7 @@
 import rospy
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import PointStamped
-from std_msgs.msg import Header
+from std_msgs.msg import Header, String
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from ultralytics import YOLO
@@ -10,20 +10,56 @@ import os
 import threading
 import torch
 import numpy as np
+import re
+
 
 class DigitRecognizer:
-    TARGET = 3
 
     def __init__(self):
+        print("Starting")
+        self.TARGET = None
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        weights_path = os.path.join(current_dir, '..', 'yolov8', 'best_detect.pt')
-        self.model = YOLO(weights_path)
+        self.weights_path = os.path.join(current_dir, '..', 'yolov8', 'best_detect.pt')
         self.bridge = CvBridge()
         self.latest_image = None
         self.depth_image = None
         self.image_lock = threading.Lock()
         self.depth_image_lock = threading.Lock()
         self.pub_coordinate = None
+        self.sub_camera  = None
+        self.sub_depth_camera = None
+        self.timer = None
+        rospy.Subscriber('/rviz_panel/goal_name', String, self.rviz_goal_callback)
+        self.running = False
+        self.pub_coordinate = None
+        rospy.spin()
+
+
+    def rviz_goal_callback(self, msg):
+        # print(msg)
+        if "/box_" in msg.data:
+            match = re.search(r'box_(\d+)', msg.data)
+            if match:
+                TARGET = int(match.group(1))
+                if self.running == False:
+                    print("Starting Perception")
+                    self.set_target(TARGET)
+                    self.run()
+
+                else:
+                    print("Changing target.")
+                    self.set_target(TARGET)
+
+        else:
+            if self.running == False:
+                return
+            else:
+                rospy.signal_shutdown("Killing node!!")
+
+
+    
+    def set_target(self, target):
+        self.TARGET = target
 
     def image_callback(self, data):
         try:
@@ -40,6 +76,7 @@ class DigitRecognizer:
             rospy.logerr("CvBridge Error: {0}".format(e))
 
     def timer_callback(self, event):
+        
         with self.image_lock:
             if self.latest_image is not None:
                 image_to_process = self.latest_image.copy()
@@ -51,7 +88,7 @@ class DigitRecognizer:
                 depth_image_to_process = self.depth_image.copy()
             else:
                 return
-
+ 
         results = self.model.predict(source=image_to_process, conf=0.5, save_conf=True, show=True)
         coordinates = results[0].boxes.xyxy
         classes = results[0].boxes.cls
@@ -97,13 +134,15 @@ class DigitRecognizer:
             return -1
 
     def run(self):
-        rospy.init_node('listener', anonymous=True)
-        rospy.Subscriber('/kinect/rgb/image_raw', Image, self.image_callback)
-        rospy.Subscriber('/kinect/depth/image_raw', Image, self.depth_image_callback)
+        self.running = True
+        self.model = YOLO(self.weights_path)
+        self.latest_image = None
+        self.depth_image = None
+        self.sub_depth_camera = rospy.Subscriber('/kinect/rgb/image_raw', Image, self.image_callback)
+        self.sub_camera = rospy.Subscriber('/kinect/depth/image_raw', Image, self.depth_image_callback)
         self.pub_coordinate = rospy.Publisher('/target/coordinates', PointStamped, queue_size= 10)
-        timer = rospy.Timer(rospy.Duration(1), self.timer_callback)
-        rospy.spin()
+        self.timer = rospy.Timer(rospy.Duration(1), self.timer_callback)
 
 if __name__ == '__main__':
+    rospy.init_node('digit_recognizer', anonymous=True)
     recognizer = DigitRecognizer()
-    recognizer.run()
