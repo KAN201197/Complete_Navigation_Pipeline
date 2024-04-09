@@ -35,7 +35,7 @@ class ExplorationManager:
         self.yolo_transformation = YoloObjectTransformationToMap()
         self.feasible_path_finder = FeasiblePathFinder()
         self.timer = rospy.Timer(
-            rospy.Duration(0.5), self.digit_recognizer.timer_callback)
+            rospy.Duration(0.1), self.digit_recognizer.timer_callback)
         self.client = actionlib.SimpleActionClient(
             'move_base', MoveBaseAction)
 
