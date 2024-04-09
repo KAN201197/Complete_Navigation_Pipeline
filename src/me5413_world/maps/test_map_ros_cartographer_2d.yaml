@@ -1,7 +1,0 @@
-image: test_map_ros_cartographer_2d.pgm
-resolution: 0.050000
-origin: [-5.921593, -20.558231, 0.000000]
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.196
-

@@ -1,7 +1,0 @@
-image: aloam_test_map2.pgm
-resolution: 0.020000
-origin: [-2.760000, -7.740000, -nan]
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.196
-
