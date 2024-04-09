@@ -30,6 +30,8 @@ RUN apt-get install -y \
   liblua5.2-dev \
   libprotobuf-dev
 
+RUN python3 -m pip install ultralytics==8.0.203
+
 USER appuser
 WORKDIR /home/appuser
 RUN git clone https://github.com/osrf/gazebo_models.git
