@@ -3,16 +3,27 @@ me5413_perception:
   frame_id: 'map'
 
   # robot starting point
-  door_entrance:
+  door_entrance_out:
     position:
-      x: 16.0
-      y: 1.0
+      x: 14.3
+      y: 3.4
       z: 0.0
     orientation:
       x: 0.0
       y: 0.0
       z: -0.9
       w: 0.23
+
+  door_entrance_in:
+    position:
+      x: 17.14
+      y: 1.459
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.906
+      w: -0.423
 
   door_exit:
     position:
@@ -24,3 +35,25 @@ me5413_perception:
       y: 0.0
       z: 0.45
       w: 0.9
+
+  corner_one:
+    position:
+      x: 15.345
+      y: -6.889
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.966
+      w: 0.259
+
+  corner_two:
+    position:
+      x: 7.274
+      y: 1.280
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: -0.476
+      w: 0.879
