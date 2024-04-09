@@ -1,6 +1,5 @@
 import json
 import yaml
-import random
 import rospy
 import actionlib
 
@@ -68,7 +67,6 @@ class ExplorationManager:
                 rospy.logerr('Could not find the target in the first run')
                 rospy.loginfo('Switching to exploration...')
 
-                random.shuffle(self.exploration_options)
                 for option in self.exploration_options:
                     self.__move_base_client(
                         option, feedback_cb=self.recognition_feedback_cb)
