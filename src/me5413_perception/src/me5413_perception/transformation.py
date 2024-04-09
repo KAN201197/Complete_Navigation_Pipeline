@@ -70,13 +70,13 @@ class YoloObjectTransformationToMap:
 
             # Check the y coordinate and adjust x and y accordingly
             if point_in_base_link[1] < 0:
-                point_in_base_link[0] = point_in_base_link[0] - 0.75  # x = x - 1
-                point_in_base_link[1] = point_in_base_link[1] + 0.75  # y = y + 1
+                point_in_base_link[0] = point_in_base_link[0] - 0.4  # x = x - 1
+                point_in_base_link[1] = point_in_base_link[1] + 0.4  # y = y + 1
             elif point_in_base_link[1] > 0:
-                point_in_base_link[0] = point_in_base_link[0] - 0.75  # x = x - 1
-                point_in_base_link[1] = point_in_base_link[1] - 0.75  # y = y - 1
+                point_in_base_link[0] = point_in_base_link[0] - 0.4  # x = x - 1
+                point_in_base_link[1] = point_in_base_link[1] - 0.4  # y = y - 1
             else:  # y == 0
-                point_in_base_link[0] = point_in_base_link[0] - 1.065  # x = x - 1
+                point_in_base_link[0] = point_in_base_link[0] - 0.56  # x = x - 1
             # y remains unchanged
             # Log the transformed point's coordinates in the map frame
 

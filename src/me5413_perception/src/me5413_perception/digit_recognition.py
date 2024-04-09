@@ -82,9 +82,10 @@ class DigitRecognizer:
 
         results = self.model.predict(
             source=image_to_process,
-            conf=0.5,
+            conf=0.7,
             save_conf=True,
-            show=True)
+            show=True,
+            verbose=False)
         if results[0].boxes.xyxy.device.type == 'cuda':
             np_coordinates = results[0].boxes.xyxy.cpu().numpy()
             np_classes = results[0].boxes.cls.cpu().numpy()
