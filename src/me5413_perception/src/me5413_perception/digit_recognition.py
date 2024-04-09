@@ -57,8 +57,13 @@ class DigitRecognizer:
             conf=0.5,
             save_conf=True,
             show=True)
-        np_coordinates = results[0].boxes.xyxy.numpy()
-        np_classes = results[0].boxes.cls.numpy()
+        if results[0].boxes.xyxy.device.type == 'cuda':
+            np_coordinates = results[0].boxes.xyxy.cpu().numpy()
+            np_classes = results[0].boxes.cls.cpu().numpy()
+        else:
+            np_coordinates = results[0].boxes.xyxy.numpy()
+            np_classes = results[0].boxes.cls.numpy()
+
         if not len(np_classes):
             rospy.loginfo(f'No detection')
             return
