@@ -2,58 +2,61 @@ me5413_perception:
   # the frame of all the poses below
   frame_id: 'map'
 
-  # robot starting point
-  door_entrance_out:
-    position:
-      x: 14.3
-      y: 3.4
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: -0.9
-      w: 0.23
+    # robot starting point
+  points:
+    traverse:
+      door_entrance_out:
+        position:
+          x: 14.3
+          y: 3.4
+          z: 0.0
+        orientation:
+          x: 0.0
+          y: 0.0
+          z: -0.9
+          w: 0.23
 
-  door_entrance_in:
-    position:
-      x: 17.14
-      y: 1.459
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.906
-      w: -0.423
+      door_exit:
+        position:
+          x: 7.5
+          y: -6.5
+          z: 0.0
+        orientation:
+          x: 0.0
+          y: 0.0
+          z: 0.45
+          w: 0.9
 
-  door_exit:
-    position:
-      x: 7.5
-      y: -6.5
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.45
-      w: 0.9
+    explore:
+      door_entrance_in:
+        position:
+          x: 17.14
+          y: 1.459
+          z: 0.0
+        orientation:
+          x: 0.0
+          y: 0.0
+          z: 0.906
+          w: -0.423
 
-  corner_one:
-    position:
-      x: 15.345
-      y: -6.889
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: 0.966
-      w: 0.259
+      corner_one:
+        position:
+          x: 15.345
+          y: -6.889
+          z: 0.0
+        orientation:
+          x: 0.0
+          y: 0.0
+          z: 0.966
+          w: 0.259
 
-  corner_two:
-    position:
-      x: 7.274
-      y: 1.280
-      z: 0.0
-    orientation:
-      x: 0.0
-      y: 0.0
-      z: -0.476
-      w: 0.879
+      corner_two:
+        position:
+          x: 7.274
+          y: 1.280
+          z: 0.0
+        orientation:
+          x: 0.0
+          y: 0.0
+          z: -0.476
+          w: 0.879

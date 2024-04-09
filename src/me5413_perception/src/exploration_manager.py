@@ -20,15 +20,22 @@ class ExplorationManager:
         rospy.init_node('exploration_manager')
         self.box_goal_name = '/box_3'
         self.frame_id = 'map'
-        self.door_entrance_param_name = 'me5413_perception/door_entrance'
+        self.door_entrance_param_name = 'me5413_perception/door_entrance_out'
         self.door_exit_param_name = 'me5413_perception/door_exit'
+        self.door_entrance_out = self.__get_goal_coordinates(
+            'me5413_perception/points/traverse/door_entrance_out')
+        self.door_exit = self.__get_goal_coordinates(
+            'me5413_perception/points/traverse/door_exit')
+        self.exploration_options = [
+            self.__get_goal_coordinates('me5413_perception/points/explore/'+param)
+            for param in list(rospy.get_param('me5413_perception/points/explore'))]
         self.point_stamped = None
         self.digit_recognizer = DigitRecognizer(
             self.point_stamped_callback)
         self.yolo_transformation = YoloObjectTransformationToMap()
         self.feasible_path_finder = FeasiblePathFinder()
         self.timer = rospy.Timer(
-            rospy.Duration(1.0), self.digit_recognizer.timer_callback)
+            rospy.Duration(0.5), self.digit_recognizer.timer_callback)
         self.client = actionlib.SimpleActionClient(
             'move_base', MoveBaseAction)
 
@@ -36,19 +43,61 @@ class ExplorationManager:
     Blocking function to run exploration and detection actions
     '''
     def run(self):
-        self.__wait_for_message(self.box_goal_name)
-        self.__move_base_client(
-            self.__get_goal_coordinates(self.door_entrance_param_name),
-            feedback_cb=self.travel_feedback_cb)
-        self.__move_base_client(
-            self.__get_goal_coordinates(self.door_exit_param_name),
-            feedback_cb=self.recognition_feedback_cb)
-        box_pose_stamped = self.yolo_transformation.object_position_callback(self.point_stamped)
-        if box_pose_stamped is not None:
-            feasible_goal_pose_stamped = self.feasible_path_finder.generate_feasible_goal(box_pose_stamped)
-            if feasible_goal_pose_stamped is not None:
+        while not rospy.is_shutdown():
+            self.point_stamped = None
+
+            # Listen on /rviz_panel/goal_name for goal trigger
+            self.__wait_for_message(self.box_goal_name)
+
+            # Plan a path to the entrance of the room
+            self.__move_base_client(
+                self.door_entrance_out, feedback_cb=self.recognition_feedback_cb)
+
+            if self.point_stamped is None:
+                # Explore the room till the target box is found and cancel
+                # current navigation once it is found
                 self.__move_base_client(
-                    self.__pose_stamped_converter(feasible_goal_pose_stamped))
+                    self.door_exit, feedback_cb=self.recognition_feedback_cb)
+
+            # Sleep for 2 seconds for the calcellation to take place
+            rospy.sleep(1.0)
+
+            # Start exploring the region
+            if self.point_stamped is None:
+                rospy.logerr('Could not find the target in the first run')
+                rospy.loginfo('Switching to exploration...')
+                while len(self.exploration_options) > 0:
+                    self.__move_base_client(
+                        self.exploration_options.pop(0),
+                        feedback_cb=self.recognition_feedback_cb)
+                    if self.point_stamped is not None:
+                        break
+
+            # Sleep for 2 seconds for the calcellation to take place
+            rospy.sleep(1.0)
+
+            # Target still not found after exploration
+            if self.point_stamped is None:
+                rospy.logerr('Could not find the target after exploration')
+                continue
+
+            # Find transformation from camera frame to map frame
+            box_pose_stamped = self.yolo_transformation.object_position_callback(
+                self.point_stamped)
+            if box_pose_stamped is None:
+                rospy.logerr(
+                    f'Could not find a transformation from camera '
+                    f'frame to map frame')
+                continue
+
+            # Find a feasible path to the the goal
+            feasible_goal_pose_stamped = self.feasible_path_finder.generate_feasible_goal(
+                box_pose_stamped)
+            if feasible_goal_pose_stamped is None:
+                rospy.logerr('Could not find a feasible path to the target')
+                continue
+            self.__move_base_client(
+                self.__pose_stamped_converter(feasible_goal_pose_stamped))
 
     '''
     Callback function passed to YOLOv8 detector to output a
@@ -64,12 +113,9 @@ class ExplorationManager:
             f'{point_stamped.point.z}')
         self.point_stamped = point_stamped
 
-    def travel_feedback_cb(self, data):
-        pass
-
     '''
-    Callback function to be passed on to move base client for goal
-    tracking
+    Callback function to be passed on to move base client to track
+    the detection of the target box
     '''
     def recognition_feedback_cb(self, data):
         if self.point_stamped is not None:
@@ -119,11 +165,11 @@ class ExplorationManager:
     '''
     def __wait_for_message(self, goal):
         while True:
-            rospy.loginfo('Waiting')
+            rospy.loginfo('Waiting for trigger from panel')
             msg = rospy.wait_for_message(
                 'rviz_panel/goal_name',
                 String)
-            rospy.loginfo(f'Received message: {msg.data}')
+            rospy.loginfo(f'Received trigger to target: {msg.data}')
             if msg.data == goal:
                 break
 
