@@ -22,9 +22,9 @@ plugins:
 - {name: obstacles_layer, type: "costmap_2d::ObstacleLayer"}
 - {name: inflater_layer, type: "costmap_2d::InflationLayer"}
 
-inflater_layer:
-  inflation_radius: 0.30
-  cost_scaling_factor: 10.0
+#inflater_layer:
+#  inflation_radius: 0.40
+#  cost_scaling_factor: 10.0
 
 obstacles_layer:
   observation_sources: rear_scan kinect_scan
@@ -34,4 +34,4 @@ obstacles_layer:
 
 static_layer:
   map_topic: /map_wall
-  subscribe_to_updates: true
+  subscribe_to_updates: false

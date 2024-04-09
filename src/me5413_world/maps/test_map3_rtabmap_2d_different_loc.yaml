@@ -1,7 +1,0 @@
-image: test_map3_rtabmap_2d_different_loc.pgm
-resolution: 0.050000
-origin: [3.634933, -4.645713, 0.000000]
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.196
-
