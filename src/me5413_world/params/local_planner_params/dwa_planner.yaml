@@ -1,25 +1,25 @@
 DWAPlannerROS:
 
  #The x acceleration limit of the robot in meters/sec^2
- acc_lim_x : 2.5
+ acc_lim_x : 10.0
 
  #The y acceleration limit of the robot in meters/sec^2 
- acc_lim_y : 2.5
+ acc_lim_y : 0.0
 
  #The rotational acceleration limit of the robot in radians/sec^2
- acc_lim_theta : 3
+ acc_lim_theta : 10.0
 
  #The absolute value of the maximum translational velocity for the robot in m/s
- max_vel_trans : 0.8
+ max_vel_trans : 1.0
 
  #The absolute value of the minimum translational velocity for the robot in m/s 
- min_vel_trans : 0.1
+ min_vel_trans : 0.2
 
  #The maximum x velocity for the robot in m/s.
- max_vel_x : 0.8
+ max_vel_x : 1.0
 
  #The minimum x velocity for the robot in m/s, negative for backwards motion.
- min_vel_x : 0.0
+ min_vel_x : -0.2
 
  #The maximum y velocity for the robot in m/s
  max_vel_y : 0
@@ -28,7 +28,7 @@ DWAPlannerROS:
  min_vel_y : 0
 
  #The absolute value of the maximum rotational velocity for the robot in rad/s
- max_vel_theta : 1.0
+ max_vel_theta : 1.4
 
  #The absolute value of the minimum rotational velocity for the robot in rad/s
  min_vel_theta : 0.4
@@ -36,7 +36,7 @@ DWAPlannerROS:
 ###Goal Tolerance Parameters
 
  #The tolerance in radians for the controller in yaw/rotation when achieving its goal
- yaw_goal_tolerance : 0.05
+ yaw_goal_tolerance : 0.1
 
  #The tolerance in meters for the controller in the x & y distance when achieving a goal
  xy_goal_tolerance : 0.1
@@ -47,10 +47,10 @@ DWAPlannerROS:
 ###Forward Simulation Parameters
 
  #The amount of time to forward-simulate trajectories in seconds
- sim_time : 2.0
+ sim_time : 1.0
 
  #The step size, in meters, to take between points on a given trajectory
- sim_granularity : 0.025
+ sim_granularity : 0.020
 
  #The number of samples to use when exploring the x velocity space
  vx_samples : 20
@@ -64,13 +64,13 @@ DWAPlannerROS:
 ###Trajectory Scoring Parameters
 
  #The weighting for how much the controller should stay close to the path it was given
- path_distance_bias : 34
+ path_distance_bias : 32
 
  #The weighting for how much the controller should attempt to reach its local goal, also controls speed
  goal_distance_bias : 20
 
  #The weighting for how much the controller should attempt to avoid obstacles
- occdist_scale : 0.05
+ occdist_scale : 0.02
 
  #The distance from the center point of the robot to place an additional scoring point, in meters
  forward_point_distance : 0.325

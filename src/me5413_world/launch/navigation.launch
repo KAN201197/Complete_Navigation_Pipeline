@@ -4,10 +4,10 @@
   <!-- <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen" respawn="true"/> -->
 
   <!-- Run the map server -->
-  <arg name="map_file" default="$(find me5413_world)/maps/hector_map_2.yaml"/>
+  <arg name="map_file" default="$(find me5413_world)/maps/hector_map.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
-  <arg name="map_file_2" default="$(find me5413_world)/maps/hector_map_2_wall.yaml"/>
+  <arg name="map_file_2" default="$(find me5413_world)/maps/hector_map_wall.yaml"/>
   <node name="map_server_2" pkg="map_server" type="map_server" args="$(arg map_file_2)">
     <remap from="/map" to="/map_wall"/>
   </node>
