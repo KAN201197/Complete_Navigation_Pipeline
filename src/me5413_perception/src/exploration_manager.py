@@ -66,10 +66,10 @@ class ExplorationManager:
             if self.point_stamped is None:
                 rospy.logerr('Could not find the target in the first run')
                 rospy.loginfo('Switching to exploration...')
-                while len(self.exploration_options) > 0:
+
+                for option in self.exploration_options:
                     self.__move_base_client(
-                        self.exploration_options.pop(0),
-                        feedback_cb=self.recognition_feedback_cb)
+                        option, feedback_cb=self.recognition_feedback_cb)
                     if self.point_stamped is not None:
                         break
 
