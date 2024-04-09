@@ -1,13 +1,15 @@
-import rospy
-import actionlib
-from std_msgs.msg import String
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-import threading
-from me5413_perception.digit_recognition import DigitRecognizer
-from geometry_msgs.msg import PointStamped
-
 import json
 import yaml
+import rospy
+import actionlib
+
+from std_msgs.msg import String
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from geometry_msgs.msg import PointStamped, PoseStamped
+
+from me5413_perception.digit_recognition import DigitRecognizer
+from me5413_perception.transformation import YoloObjectTransformationToMap
+from me5413_perception.feasible_path_finder import FeasiblePathFinder
 
 class ExplorationManager:
     def __init__(self):
@@ -19,6 +21,8 @@ class ExplorationManager:
         self.point_stamped = None
         self.digit_recognizer = DigitRecognizer(
             self.point_stamped_callback)
+        self.yolo_transformation = YoloObjectTransformationToMap()
+        self.feasible_path_finder = FeasiblePathFinder()
         self.timer = rospy.Timer(
             rospy.Duration(1.0),
             self.digit_recognizer.timer_callback)
@@ -29,11 +33,18 @@ class ExplorationManager:
     def run(self):
         self.__wait_for_message(self.box_goal_name)
         self.__move_base_client(
-            self.door_entrance_param_name,
+            self.__get_goal_coordinates(self.door_entrance_param_name),
             feedback_cb=self.travel_feedback_cb)
         self.__move_base_client(
-            self.door_exit_param_name,
+            self.__get_goal_coordinates(self.door_exit_param_name),
             feedback_cb=self.recognition_feedback_cb)
+        box_pose_stamped = self.yolo_transformation.object_position_callback(self.point_stamped)
+        if box_pose_stamped is not None:
+            feasible_goal_pose_stamped = self.feasible_path_finder.generate_feasible_goal(box_pose_stamped)
+            if feasible_goal_pose_stamped is not None:
+                self.__move_base_client(
+                    self.__pose_stamped_converter(feasible_goal_pose_stamped))
+
         # if self.point_stamped is not None:
         #     rospy.loginfo(f'Point: {self.point_stamped.point.x}, {self.point_stamped.point.y}, {self.point_stamped.point.z}')
 
@@ -48,9 +59,7 @@ class ExplorationManager:
         if self.point_stamped is not None:
             self.client.cancel_goal()
 
-    def __move_base_client(self, param_name, feedback_cb=None):
-        self.client.wait_for_server()
-        rospy.loginfo('Connected')
+    def __get_goal_coordinates(self, param_name):
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = self.frame_id
         goal.target_pose.header.stamp = rospy.Time.now()
@@ -58,8 +67,20 @@ class ExplorationManager:
         goal.target_pose.pose.position.y = rospy.get_param(param_name+'/position/y')
         goal.target_pose.pose.orientation.z = rospy.get_param(param_name+'/orientation/z')
         goal.target_pose.pose.orientation.w = rospy.get_param(param_name+'/orientation/w')
+        return goal
 
-        self.client.send_goal(goal, feedback_cb=feedback_cb)
+    def __move_base_client(self, move_base_goal, feedback_cb=None):
+        self.client.wait_for_server()
+        rospy.loginfo('Connected')
+        # goal = MoveBaseGoal()
+        # goal.target_pose.header.frame_id = self.frame_id
+        # goal.target_pose.header.stamp = rospy.Time.now()
+        # goal.target_pose.pose.position.x = rospy.get_param(param_name+'/position/x')
+        # goal.target_pose.pose.position.y = rospy.get_param(param_name+'/position/y')
+        # goal.target_pose.pose.orientation.z = rospy.get_param(param_name+'/orientation/z')
+        # goal.target_pose.pose.orientation.w = rospy.get_param(param_name+'/orientation/w')
+
+        self.client.send_goal(move_base_goal, feedback_cb=feedback_cb)
         result = self.client.wait_for_result()
         if result:
             rospy.loginfo(self.client.get_goal_status_text())
@@ -71,6 +92,16 @@ class ExplorationManager:
             rospy.loginfo(f'Received message: {msg.data}')
             if msg.data == goal:
                 break
+
+    def __pose_stamped_converter(self, msg: PoseStamped):
+        goal = MoveBaseGoal()
+        goal.target_pose.header.frame_id = self.frame_id
+        goal.target_pose.header.stamp = rospy.Time.now()
+        goal.target_pose.pose.position.x = msg.pose.position.x
+        goal.target_pose.pose.position.y = msg.pose.position.y
+        goal.target_pose.pose.orientation.z = msg.pose.orientation.z
+        goal.target_pose.pose.orientation.w = msg.pose.orientation.w
+        return goal
 
     def __msg_to_json(self, data):
         msg_yaml = yaml.load(str(data))

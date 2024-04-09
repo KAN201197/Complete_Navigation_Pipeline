@@ -1,60 +1,28 @@
-#!/usr/bin/env python3
 import rospy
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import PointStamped
 from std_msgs.msg import Header, String
-import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from ultralytics import YOLO
 import os
 import threading
-import torch
 import numpy as np
-import re
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 weights_path = os.path.join(current_dir, 'yolov8', 'best_detect.pt')
 
 class DigitRecognizer:
     def __init__(self, callback_fn):
-        # rospy.init_node('digit_recognizer')
         self.target = 3
         self.bridge = CvBridge()
         self.latest_image = None
         self.depth_image = None
         self.image_lock = threading.Lock()
         self.depth_image_lock = threading.Lock()
-        # self.pub_coordinate = None
-        # self.sub_camera  = None
-        # self.sub_depth_camera = None
-        # self.timer = None
-        # rospy.Subscriber('/rviz_panel/goal_name', String, self.rviz_goal_callback)
-        # self.running = False
-        # self.pub_coordinate = None
         self.callback_fn = callback_fn
-        # rospy.spin()
         self.model = YOLO(weights_path)
         self.sub_depth_camera = rospy.Subscriber('/kinect/rgb/image_raw', Image, self.image_callback)
         self.sub_camera = rospy.Subscriber('/kinect/depth/image_raw', Image, self.depth_image_callback)
-
-    # def rviz_goal_callback(self, msg):
-    #     # print(msg)
-    #     if "/box_" in msg.data:
-    #         match = re.search(r'box_(\d+)', msg.data)
-    #         if match:
-    #             TARGET = int(match.group(1))
-    #             if self.running == False:
-    #                 print("Starting Perception")
-    #                 self.set_target(TARGET)
-    #                 self.run()
-    #             else:
-    #                 print("Changing target.")
-    #                 self.set_target(TARGET)
-    #     else:
-    #         if self.running == False:
-    #             return
-    #         else:
-    #             rospy.signal_shutdown("Killing node!!")
 
     # def set_target(self, target):
     #     self.TARGET = target
@@ -109,16 +77,11 @@ class DigitRecognizer:
             rospy.logwarn('Index out of bounds')
             return
 
-        # if 0 <= x_center < depth_image_to_process.shape[1] and 0 <= y_center < depth_image_to_process.shape[0]:
         depth = depth_image_to_process[y_center, x_center]
         if np.isnan(depth):
             rospy.logwarn("Depth value is NaN at ({}, {})".format(x_center, y_center))
             return
         self.callback_fn(self.__create_coordinate_msg(x_center, y_center, depth))
-        # else:
-        #     rospy.logwarn("Coordinates out of bounds.")
-        # else:
-        #     rospy.loginfo("Target not found.")
 
     def __create_coordinate_msg(self, x, y, z):
         msg = PointStamped()
@@ -131,17 +94,6 @@ class DigitRecognizer:
         msg.point.z = z
         return msg
 
-    # def coordinates_publisher(self, x, y, z):
-    #     msg = PointStamped()
-    #     header = Header()
-    #     header.stamp = rospy.Time.now()
-    #     header.frame_id = "Image frame"
-    #     msg.header = header
-    #     msg.point.x = x
-    #     msg.point.y = y
-    #     msg.point.z = z
-    #     self.pub_coordinate.publish(msg)
-
     def __find_number_in_array(self, array, number):
         indices = np.where(array == number)[0]
         print(indices)
@@ -149,17 +101,3 @@ class DigitRecognizer:
             return indices[0]
         else:
             return -1
-
-    # def run(self):
-    #     self.running = True
-    #     self.model = YOLO(self.weights_path)
-    #     self.latest_image = None
-    #     self.depth_image = None
-    #     self.sub_depth_camera = rospy.Subscriber('/kinect/rgb/image_raw', Image, self.image_callback)
-    #     self.sub_camera = rospy.Subscriber('/kinect/depth/image_raw', Image, self.depth_image_callback)
-    #     self.pub_coordinate = rospy.Publisher('/target/coordinates', PointStamped, queue_size= 10)
-    #     self.timer = rospy.Timer(rospy.Duration(1), self.timer_callback)
-
-# if __name__ == '__main__':
-#     rospy.init_node('digit_recognizer', anonymous=True)
-#     recognizer = DigitRecognizer()
