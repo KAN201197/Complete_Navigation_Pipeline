@@ -1,7 +1,6 @@
-# ME5413_Final_Project
+# ME5413_Final_Project_Grouop_2
 
 NUS ME5413 Autonomous Mobile Robotics Final Project
-> Authors: [Christina](https://github.com/ldaowen), [Yuhang](https://github.com/yuhang1008), [Dongen](https://github.com/nuslde), and [Shuo](https://github.com/SS47816)
 
 ![Ubuntu 20.04](https://img.shields.io/badge/OS-Ubuntu_20.04-informational?style=flat&logo=ubuntu&logoColor=white&color=2bbc8a)
 ![ROS Noetic](https://img.shields.io/badge/Tools-ROS_Noetic-informational?style=flat&logo=ROS&logoColor=white&color=2bbc8a)
@@ -27,6 +26,7 @@ NUS ME5413 Autonomous Mobile Robotics Final Project
   * `nav_msgs`
   * `geometry_msgs`
   * `visualization_msgs`
+  * `tf`
   * `tf2`
   * `tf2_ros`
   * `tf2_geometry_msgs`
@@ -42,13 +42,17 @@ NUS ME5413 Autonomous Mobile Robotics Final Project
 
 ## Installation
 
-This repo is a ros workspace, containing three rospkgs:
+This repo is a ros workspace, containing eight rospkgs:
 
+* `me5413_world` the main pkg containing the gazebo world, and the launch files
+* `me5413_perception` pkg for perception part and exploration part of project
+* `me5413_mapping` pkg for hector SLAM
+* `velodyne_simulator` velodyne LiDAR with GPU acceloration
+* `laserscan_merger` merge front 2D LiDAR and rear 2D LiDAR
 * `interactive_tools` are customized tools to interact with gazebo and your robot
 * `jackal_description` contains the modified jackal robot model descriptions
-* `me5413_world` the main pkg containing the gazebo world, and the launch files
-
-**Note:** If you are working on this project, it is encouraged to fork this repository and work on your own fork!
+* `A-LOAM` pkg for A-LOAM SLAM
+* 
 
 After forking this repo to your own github:
 
@@ -62,6 +66,7 @@ git submodule update
 
 # Install all dependencies
 rosdep install --from-paths src --ignore-src -r -y
+pip3 install -r requirements.txt
 
 # Build
 catkin_make
@@ -96,95 +101,31 @@ There are two sources of models needed:
 
 ## Usage
 
-### 0. Gazebo World
-
-This command will launch the gazebo with the project world
+### 1. Launch Gazebo world
 
 ```bash
 # Launch Gazebo World together with our robot
 roslaunch me5413_world world.launch
 ```
 
-### 1. Manual Control
+### 2. Launch Navigation
+After launching step 1 in a separate terminal
 
-If you wish to explore the gazebo world a bit, we provide you a way to manually control the robot around:
-
-```bash
-# Only launch the robot keyboard teleop control
-roslaunch me5413_world manual.launch
-```
-
-**Note:** This robot keyboard teleop control is also included in all other launch files, so you don't need to launch this when you do mapping or navigation.
-
-![rviz_manual_image](src/me5413_world/media/rviz_manual.png)
-
-### 2. Mapping
-
-After launching **Step 0**, in the second terminal:
+Launches Navigation for the robot
 
 ```bash
-# Launch GMapping
-roslaunch me5413_world mapping.launch
-```
-
-After finishing mapping, run the following command in the thrid terminal to save the map:
-
-```bash
-# Save the map as `my_map` in the `maps/` folder
-roscd me5413_world/maps/
-rosrun map_server map_saver -f my_map map:=/map
-```
-
-![rviz_nmapping_image](src/me5413_world/media/rviz_mapping.png)
-
-
-
-
-To view the .pcd map saved, use the following command (change the path of map):
-
-```bash
-roslaunch me5413_world pcd_view.launch pcd_file:=${HOME}/ME5413/Final_Project/ME5413_Final_Project_Group_2/maps/map_pcd.pcd
-```
-### 3. Navigation
-
-Once completed **Step 2** mapping and saved your map, quit the mapping process.
-
-Then, in the second terminal:
-
-```bash
-# Load a map and launch AMCL localizer
 roslaunch me5413_world navigation.launch
 ```
+Can choose which production line to go to in Rviz
 
-![rviz_navigation_image](src/me5413_world/media/rviz_navigation.png)
+### 3. Perception & Exploration
+After launching step 2 in a separate terminal
 
-## Student Tasks
+Lauch perception and Exploratino for the Robot
 
-### 1. Map the environment
-
-* You may use any SLAM algorithm you like, any type:
-  * 2D LiDAR
-  * 3D LiDAR
-  * Vision
-  * Multi-sensor
-* Verify your SLAM accuracy by comparing your odometry with the published `/gazebo/ground_truth/state` topic (`nav_msgs::Odometry`), which contains the gournd truth odometry of the robot.
-* You may want to use tools like [EVO](https://github.com/MichaelGrupp/evo) to quantitatively evaluate the performance of your SLAM algorithm.
-
-### 2. Using your own map, navigate your robot
-
-* From the starting point, move to the given pose within each area in sequence
-  * Assembly Line 1, 2
-  * Random Box 1, 2, 3, 4
-  * Delivery Vehicle 1, 2, 3
-* We have provided you a GUI in RVIZ that allows you to click and publish these given goal poses to the `/move_base_simple/goal` topic:
-
-  ![rviz_panel_image](src/me5413_world/media/rviz_panel.png)
-
-* We also provides you four topics (and visualized in RVIZ) that computes the real-time pose error between your robot and the selelcted goal pose:
-  * `/me5413_world/absolute/heading_error` (in degrees, wrt `world` frame, `std_msgs::Float32`)
-  * `/me5413_world/absolute/position_error` (in meters, wrt `world` frame, `std_msgs::Float32`)
-  * `/me5413_world/relative/heading_error` (in degrees, wrt `map` frame, `std_msgs::Float32`)
-  * `/me5413_world/relative/position_error` (in meters wrt `map` frame, `std_msgs::Float32`)
+```bash
+roslaunch me5413_perception exploration.launch
+```
 
 ## Contribution
 
