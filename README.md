@@ -52,9 +52,14 @@ This repo is a ros workspace, containing eight rospkgs:
 * `interactive_tools` are customized tools to interact with gazebo and your robot
 * `jackal_description` contains the modified jackal robot model descriptions
 * `A-LOAM` pkg for A-LOAM SLAM
-* 
 
-After forking this repo to your own github:
+The `docs` folder contains the following:
+
+* Report
+* PowerPoint
+* Video
+
+The maps can be found at `src/me5413_world/maps`.
 
 ```bash
 # Clone your own fork of this repo (assuming home here `~/`)
