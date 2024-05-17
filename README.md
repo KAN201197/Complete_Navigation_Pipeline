@@ -8,6 +8,8 @@ In this project, we implement a complete navigation pipeline which consist of pe
 
 In this project also we set non-passable area which we use a seperate map server for sending the traversable map to the planner (one map used for localization and other map used for motion planning). The object detection is done by kinect camera which already transform into 2D lidar data and rear 2D lidar to do obstacle avoidance. The capability of obstacle avoidance can be seen from image below.
 
+![image](https://github.com/KAN201197/Complete_Navigation_Pipeline/assets/128454220/bdcbb302-2bc3-4700-abee-d633a9f99994)
+
 ## Dependencies
 
 * System Requirements:
@@ -113,7 +115,9 @@ Launches Navigation for the robot
 ```bash
 roslaunch me5413_world navigation.launch
 ```
-Can choose which production line to go to in Rviz
+Can choose which production line to go to in Rviz by clicking simple panel.
+
+![image](https://github.com/KAN201197/Complete_Navigation_Pipeline/assets/128454220/c5ee9003-8462-40ea-9ff4-3296f2c721ab)
 
 ### 3. Perception & Exploration
 After launching step 2 in a separate terminal
@@ -123,10 +127,6 @@ Lauch perception and exploration for the Robot
 ```bash
 roslaunch me5413_perception exploration.launch
 ```
+When the robot find the target object, it will adjust the global path which generate a new path to the target object which can be seen below.
 
-
- 
-
-
-
-
+![image](https://github.com/KAN201197/Complete_Navigation_Pipeline/assets/128454220/02678966-9eb0-485b-acab-d872331dac12)
