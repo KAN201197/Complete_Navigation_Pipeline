@@ -53,12 +53,12 @@ This repo is a ros workspace, containing eight rospkgs:
 The maps can be found at `src/me5413_world/maps`.
 
 ```bash
-# Clone your own fork of this repo (assuming home here `~/`)
-cd
-git 
-cd ME5413_Final_Project_Group_2
-git submodule init
-git submodule update
+
+mkdir catkin_ws
+
+cd catkin_ws
+
+git https://github.com/KAN201197/Complete_Navigation_Pipeline.git
 
 # Install all dependencies
 rosdep install --from-paths src --ignore-src -r -y
@@ -66,6 +66,7 @@ pip3 install -r requirements.txt
 
 # Build
 catkin_make
+
 # Source
 source devel/setup.bash
 ```
@@ -117,7 +118,7 @@ Can choose which production line to go to in Rviz
 ### 3. Perception & Exploration
 After launching step 2 in a separate terminal
 
-Lauch perception and Exploratino for the Robot
+Lauch perception and exploration for the Robot
 
 ```bash
 roslaunch me5413_perception exploration.launch
