@@ -8,7 +8,7 @@ In this project, we implement a complete navigation pipeline which consist of pe
 
 In this project also we set non-passable area which we use a seperate map server for sending the traversable map to the planner (one map used for localization and other map used for motion planning). The object detection is done by kinect camera which already transform into 2D lidar data and rear 2D lidar to do obstacle avoidance. The capability of obstacle avoidance can be seen from image below.
 
-![image](https://github.com/KAN201197/Complete_Navigation_Pipeline/assets/128454220/bdcbb302-2bc3-4700-abee-d633a9f99994)
+![DWAObstacleAvoidance-ezgif com-resize](https://github.com/KAN201197/Complete_Navigation_Pipeline/assets/128454220/56a1d68b-80e0-4498-896a-603837ce31c8)
 
 ## Dependencies
 
